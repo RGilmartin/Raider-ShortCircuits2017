@@ -30,9 +30,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+import java.util.List;
 
 /**
  * This is NOT an opmode.
@@ -52,23 +56,56 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 public class Robot
 {
-    /* Public OpMode members. */
+    private DcMotor frontRight;
+    private DcMotor frontLeft;
+    private DcMotor backRight;
+    private DcMotor backLeft;
 
-    public static final double MID_SERVO       =  0.5 ;
-    public static final double ARM_UP_POWER    =  0.45 ;
-    public static final double ARM_DOWN_POWER  = -0.45 ;
 
+    private float maxSpeed = 1f;
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
 
     /* Constructor */
-    public Robot(){
+    public Robot() {
 
+    }
+
+    public void setMode(List<DcMotor> list, DcMotor.RunMode runmode) {
+        for(int i = 0; i < list.size(); i++) {
+            list.get(i).setMode(runmode);
+
+        }
+    }
+
+    public void drive(DcMotor frontRight, DcMotor frontLeft, DcMotor backLeft, DcMotor backRight, float power) {
+        frontRight.setPower(Range.clip(power, -maxSpeed, maxSpeed));
+        frontLeft.setPower(Range.clip(power, -maxSpeed, maxSpeed));
+        backRight.setPower(Range.clip(power, -maxSpeed, maxSpeed));
+        backLeft.setPower(Range.clip(power, -maxSpeed, maxSpeed));
+    }
+
+
+    public void setMaxSpeed(float max){
+        maxSpeed = max;
     }
 
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap) {
+        frontRight = hwMap.get(DcMotor.class, "front_right_motor");
+        frontLeft = hwMap.get(DcMotor.class, "front_left_motor");
+        backRight = hwMap.get(DcMotor.class, "back_right_motor");
+        backLeft = hwMap.get(DcMotor.class, "back_left_motor");
+
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
+
+        // Set all motors to zero power
+        frontRight.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        backLeft.setPower(0);
 
     }
  }
