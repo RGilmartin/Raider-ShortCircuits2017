@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,7 +62,7 @@ public class Robot
     private DcMotor backRight;
     private DcMotor backLeft;
 
-
+    private List<DcMotor> driveMotors = new ArrayList<>();
     private float maxSpeed = 1f;
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -79,13 +80,12 @@ public class Robot
         }
     }
 
-    public void drive(DcMotor frontRight, DcMotor frontLeft, DcMotor backLeft, DcMotor backRight, float power) {
-        frontRight.setPower(Range.clip(power, -maxSpeed, maxSpeed));
-        frontLeft.setPower(Range.clip(power, -maxSpeed, maxSpeed));
-        backRight.setPower(Range.clip(power, -maxSpeed, maxSpeed));
-        backLeft.setPower(Range.clip(power, -maxSpeed, maxSpeed));
+    public void drive(float xInput, float yInput, float zInput) {
+        frontRight.setPower(Range.clip(yInput - xInput - zInput, -maxSpeed, maxSpeed));
+        frontLeft.setPower(Range.clip(yInput + xInput + zInput, -maxSpeed, maxSpeed));
+        backRight.setPower(Range.clip(yInput + xInput - zInput, -maxSpeed, maxSpeed));
+        backLeft.setPower(Range.clip(yInput - xInput + zInput, -maxSpeed, maxSpeed));
     }
-
 
     public void setMaxSpeed(float max){
         maxSpeed = max;
@@ -101,11 +101,20 @@ public class Robot
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.REVERSE);
 
+        driveMotors.add(frontRight);
+        driveMotors.add(frontLeft);
+        driveMotors.add(backRight);
+        driveMotors.add(backLeft);
+
+
         // Set all motors to zero power
         frontRight.setPower(0);
         frontLeft.setPower(0);
         backRight.setPower(0);
         backLeft.setPower(0);
+
+
+        setMode(driveMotors, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
  }
