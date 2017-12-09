@@ -36,6 +36,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,6 +74,20 @@ public class Robot
         backLeft.setPower(Range.clip(yInput - xInput + zInput, -maxSpeed, maxSpeed));
     }
 
+    public void findCryptoBox(float xInput, float yInput, float zInput, boolean cryptoboxDetected)
+    {
+        drive(xInput, yInput, zInput);
+        while (!cryptoboxDetected)
+        {
+
+        }
+
+        drive(0,0,0);
+    }
+
+    public void alignWithCryptoBox()
+    {}
+
     public void setMaxSpeed(float max){
         maxSpeed = max;
     }
@@ -100,7 +116,6 @@ public class Robot
 
 
         setMode(driveMotors, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
     }
  }
 
