@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -37,6 +38,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,19 +76,56 @@ public class Robot
         backLeft.setPower(Range.clip(yInput - xInput + zInput, -maxSpeed, maxSpeed));
     }
 
-    public void findCryptoBox(float xInput, float yInput, float zInput, boolean cryptoboxDetected)
+    public void findCryptoBox(float xInput, float yInput, float zInput, CryptoboxDetector cryptoboxDetector)
     {
+        boolean isCryptoboxDetected = cryptoboxDetector.isCryptoBoxDetected();
         drive(xInput, yInput, zInput);
-        while (!cryptoboxDetected)
+        while (!isCryptoboxDetected)
         {
-
+            isCryptoboxDetected = cryptoboxDetector.isCryptoBoxDetected();
         }
 
         drive(0,0,0);
     }
 
-    public void alignWithCryptoBox()
-    {}
+    // column: 0 is left, 1 is center, 2 is right
+    public void alignWithCryptoBox(float xInput, float yInput, float zInput, int column, CryptoboxDetector cryptoboxDetector,
+                                   Telemetry telemetry)
+    {
+        drive(xInput, yInput, zInput);
+
+        switch (column) {
+            case 0:
+                while(cryptoboxDetector.getCryptoBoxLeftPosition() > 0 || cryptoboxDetector.getCryptoBoxLeftPosition() < 0)
+                {
+                    telemetry.addData("Lining up with left CryptoBox.\n %s left to align",
+                            cryptoboxDetector.getCryptoBoxLeftPosition());
+                    telemetry.update();
+                }
+                break;
+            case 1:
+                while(cryptoboxDetector.getCryptoBoxCenterPosition() > 0 || cryptoboxDetector.getCryptoBoxCenterPosition() < 0)
+                {
+                    telemetry.addData("Lining up with center CryptoBox.\n %s left to align",
+                            cryptoboxDetector.getCryptoBoxCenterPosition());
+                    telemetry.update();
+                }
+                break;
+            case 2:
+                while(cryptoboxDetector.getCryptoBoxRightPosition() > 0 || cryptoboxDetector.getCryptoBoxRightPosition() < 0)
+                {
+                    telemetry.addData("Lining up with right CryptoBox.\n %s left to align",
+                            cryptoboxDetector.getCryptoBoxRightPosition());
+                    telemetry.update();
+                }
+                break;
+            default:
+                telemetry.addData("Error", "could not align");
+                telemetry.update();
+                break;
+        }
+        drive(0,0,0);
+    }
 
     public void setMaxSpeed(float max){
         maxSpeed = max;

@@ -27,13 +27,14 @@ public class GlyphPlacementRed extends LinearOpMode {
 
     public static final String TAG = "Vuforia VuMark Sample";
 
+    private Robot robot = new Robot();
     private CryptoboxDetector cryptoboxDetector = null;
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
-    ClosableVuforiaLocalizer vuforia;
+     private ClosableVuforiaLocalizer vuforia;
 
     @Override public void runOpMode() {
 
@@ -48,12 +49,7 @@ public class GlyphPlacementRed extends LinearOpMode {
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = (ClosableVuforiaLocalizer) ClassFactory.createVuforiaLocalizer(parameters);
 
-        /**
-         * Load the data set containing the VuMarks for Relic Recovery. There's only one trackable
-         * in this data set: all three of the VuMarks in the game were created from this one template,
-         * but differ in their instance id information.
-         * @see VuMarkInstanceId
-         */
+
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
@@ -88,21 +84,23 @@ public class GlyphPlacementRed extends LinearOpMode {
                 switch (vuMark) {
                     case LEFT:
 
-                        while(!cryptoboxDetector.isCryptoBoxDetected())
-                        {
-                            // Move until it finds the cryptobox
-                        }
-
+                        robot.findCryptoBox(.5f, 0f, 0f, cryptoboxDetector);
+                        robot.alignWithCryptoBox(.2f, 0, 0, 0, cryptoboxDetector, telemetry);
+                        // call functions to place glyph in column
 
 
                         break;
                     case CENTER:
+
+                        robot.findCryptoBox(.5f, 0,0, cryptoboxDetector);
+                        robot.alignWithCryptoBox(.2f, 0,0,1, cryptoboxDetector, telemetry);
                         break;
                     case RIGHT:
+
+                        robot.findCryptoBox(.5f, 0,0, cryptoboxDetector);
+                        robot.alignWithCryptoBox(.2f, 0,0,2, cryptoboxDetector, telemetry);
                         break;
                 }
-
-
             }
             else {
                 telemetry.addData("VuMark", "not visible");
